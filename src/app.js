@@ -1,12 +1,24 @@
+const NUM_SPRINGS = 20;
+
 class App {
   constructor() {
     this.view = new PhysicsView(document.getElementById('canvas'));
 
-    const p1 = new Particle(100, 100);
-    const p2 = new Particle(200, 100);
-    p2.velX = 50;
-    new Spring(p1, p2);
-    this.view.setPoints([p1, p2]);
+    const points = [];
+    for (let x = 100; x < 500; x += 20) {
+      for (let y = 100; y < 500; y += 20) {
+        const p = new Particle(x, y);
+        points.push(p);
+      }
+    }
+    points.forEach((p1, i) => {
+      points.slice(i + 1).forEach((p2) => {
+        if (p1.distance(p2) < 100) {
+          new Spring(p1, p2);
+        }
+      })
+    });
+    this.view.setPoints(points);
 
     setInterval(() => {
       const elapsed = 1 / 24;

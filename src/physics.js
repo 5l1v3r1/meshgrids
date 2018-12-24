@@ -1,4 +1,6 @@
 const VEL_DAMPING = 0.5;
+const DEFAULT_K = 0.1;
+const MAX_VEL = 100;
 
 class Particle {
   constructor(x, y) {
@@ -17,6 +19,11 @@ class Particle {
     });
     this.velX *= Math.pow(VEL_DAMPING, t);
     this.velY *= Math.pow(VEL_DAMPING, t);
+    const vel = Math.sqrt(this.velX * this.velX + this.velY * this.velY);
+    if (vel > MAX_VEL) {
+      this.velX *= MAX_VEL / vel;
+      this.velY *= MAX_VEL / vel;
+    }
   }
 
   applyVelocities(t) {
@@ -36,7 +43,7 @@ class Spring {
     p1.springs.push(this);
     p2.springs.push(this);
     this.restLength = p1.distance(p2);
-    this.k = k || 1;
+    this.k = k || DEFAULT_K;
   }
 
   forceOn(p) {
