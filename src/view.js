@@ -1,8 +1,11 @@
 class PhysicsView {
-  constructor(canvas, points) {
+  constructor(canvas) {
     this.canvas = canvas;
     this.points = [];
     this.springs = [];
+    this.pressedPoint = null;
+    this.pressedLoc = [0, 0];
+    this.setupMouseEvents();
   }
 
   setPoints(points) {
@@ -11,7 +14,7 @@ class PhysicsView {
     points.forEach((p) => {
       p.springs.forEach((s) => {
         if (p === s.p1) {
-          this.springs.append(s);
+          this.springs.push(s);
         }
       });
     });
@@ -19,6 +22,11 @@ class PhysicsView {
 
   draw() {
     const ctx = this.canvas.getContext('2d');
+    if (this.pressedPoint) {
+      this.pressedPoint.x = this.pressedLoc[0];
+      this.pressedPoint.y = this.pressedLoc[1];
+    }
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.fillStyle = 'black';
     ctx.strokeStyle = '#999';
     this.springs.forEach((s) => {
@@ -31,6 +39,30 @@ class PhysicsView {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
       ctx.fill();
+    });
+  }
+
+  setupMouseEvents() {
+    this.canvas.addEventListener('mousedown', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      let closest = null;
+      let closestDist = 1000000;
+      this.points.forEach((p) => {
+        const dist = p.distance(new Particle(x, y));
+        if (dist < closestDist) {
+          closest = p;
+          closestDist = dist;
+        }
+      });
+      this.pressedPoint = closest;
+      this.pressedLoc = [x, y];
+    });
+    this.canvas.addEventListener('mousemove', (e) => {
+      this.pressedLoc = [e.clientX, e.clientY];
+    });
+    this.canvas.addEventListener('mouseup', (e) => {
+      this.pressedPoint = null;
     });
   }
 }

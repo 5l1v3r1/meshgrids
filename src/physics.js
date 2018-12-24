@@ -1,3 +1,5 @@
+const VEL_DAMPING = 0.5;
+
 class Particle {
   constructor(x, y) {
     this.x = x;
@@ -9,10 +11,17 @@ class Particle {
 
   applyForces(t) {
     this.springs.forEach((s) => {
-      [fx, fy] = s.forceOn(this);
+      let [fx, fy] = s.forceOn(this);
       this.velX += t * fx;
       this.velY += t * fy;
     });
+    this.velX *= Math.pow(VEL_DAMPING, t);
+    this.velY *= Math.pow(VEL_DAMPING, t);
+  }
+
+  applyVelocities(t) {
+    this.x += t * this.velX;
+    this.y += t * this.velY;
   }
 
   distance(p2) {
@@ -21,10 +30,19 @@ class Particle {
 }
 
 class Spring {
-  constructor(p1, p2) {
+  constructor(p1, p2, k) {
     this.p1 = p1;
     this.p2 = p2;
+    p1.springs.push(this);
+    p2.springs.push(this);
     this.restLength = p1.distance(p2);
-    this.hookeConstant = 1;
+    this.k = k || 1;
+  }
+
+  forceOn(p) {
+    const curLength = this.p1.distance(this.p2);
+    const mag = (curLength - this.restLength) * this.k;
+    const other = (p === this.p1 ? this.p2 : this.p1);
+    return [mag * (other.x - p.x), mag * (other.y - p.y)];
   }
 }
