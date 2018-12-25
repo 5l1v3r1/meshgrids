@@ -6,6 +6,7 @@ class PhysicsView {
     this.pressedPoint = null;
     this.pressedLoc = [0, 0];
     this.setupMouseEvents();
+    this.setupResizeEvents();
   }
 
   setPoints(points) {
@@ -35,11 +36,11 @@ class PhysicsView {
       ctx.lineTo(s.p2.x, s.p2.y);
       ctx.stroke();
     });
-    this.points.forEach((p) => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-    });
+    // this.points.forEach((p) => {
+    //   ctx.beginPath();
+    //   ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+    //   ctx.fill();
+    // });
   }
 
   setupMouseEvents() {
@@ -64,5 +65,15 @@ class PhysicsView {
     this.canvas.addEventListener('mouseup', (e) => {
       this.pressedPoint = null;
     });
+  }
+
+  setupResizeEvents() {
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
   }
 }

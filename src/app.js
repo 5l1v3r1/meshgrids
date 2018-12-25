@@ -14,16 +14,18 @@ class App {
     points.forEach((p1, i) => {
       points.slice(i + 1).forEach((p2) => {
         if (p1.distance(p2) < 100) {
-          new Spring(p1, p2);
+          new Spring(p1, p2, 900 / Math.pow(p1.distance(p2), 2));
         }
       })
     });
     this.view.setPoints(points);
 
     setInterval(() => {
-      const elapsed = 1 / 24;
-      this.view.points.forEach((p) => p.applyForces(elapsed));
-      this.view.points.forEach((p) => p.applyVelocities(elapsed));
+      const elapsed = 1 / (4 * 24);
+      for (let i = 0; i < 4; ++i) {
+        this.view.points.forEach((p) => p.applyForces(elapsed));
+        this.view.points.forEach((p) => p.applyVelocities(elapsed));
+      }
       this.view.draw();
     }, 1000 / 24);
   }
